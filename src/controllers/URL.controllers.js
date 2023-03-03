@@ -30,7 +30,7 @@ export async function getUrlById(req, res) {
                 SELECT * FROM links WHERE id = $1
             `, [id])
         if (rowCount === 0) return res.sendStatus(404)
-        res.status(201).send({
+        res.status(200).send({
             id: url[0].id,
             url: url[0].url,
             shortUrl: url[0].shortUrl
