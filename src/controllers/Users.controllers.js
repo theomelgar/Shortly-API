@@ -74,8 +74,7 @@ export async function ranking(req, res) {
             GROUP BY users.id
             ORDER BY "visitCount" DESC, id ASC
             LIMIT 10
-        `, [user.id]
-        )
+        `)
         return res.status(200).send(rank.rows)
     } catch (error) {
         res.status(500).send(error.message)

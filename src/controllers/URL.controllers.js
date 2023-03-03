@@ -48,7 +48,7 @@ export async function redirect(req, res) {
             `
                 SELECT * FROM links WHERE "shortUrl" = $1
             `, [shortUrl])
-        if (rowCount < 0) return res.sendStatus(404)
+        if (rowCount < 1) return res.sendStatus(404)
 
         await db.query(
             `   
