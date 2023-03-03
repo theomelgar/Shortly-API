@@ -3,9 +3,7 @@ import bcrypt from 'bcrypt';
 
 export async function signUpMW(req, res, next) {
     const user = req.body;
-    if (!user) {
-        return res.sendStatus(422)
-    }
+
     try {
         const userExist = await db.query(
             `SELECT * FROM users WHERE email=$1`, [user.email]
@@ -13,7 +11,7 @@ export async function signUpMW(req, res, next) {
         if (userExist.rowCount > 0) {
             return res.sendStatus(409)
         }
-        if (user.password !== user.confirmPassword){
+        if (user.password !== user.confirmPassword) {
             return res.status(422).send(console.log('Password confirmation is different'))
         }
 
@@ -27,7 +25,7 @@ export async function signUpMW(req, res, next) {
 export async function signInMW(req, res, next) {
     const { email, password } = req.body;
     try {
-        if(!email || !password) return res.sendStatus(422)
+
         const userExist = await db.query(
             `SELECT * FROM users WHERE email=$1`, [email]
         )
