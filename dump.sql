@@ -63,7 +63,8 @@ CREATE TABLE public.ranking (
     "userId" integer NOT NULL,
     "totalViews" bigint DEFAULT 0 NOT NULL,
     links integer DEFAULT 0 NOT NULL,
-    "userName" text NOT NULL
+    "userName" text NOT NULL,
+    "createdAt" date DEFAULT now() NOT NULL
 );
 
 
