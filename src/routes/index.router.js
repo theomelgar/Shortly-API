@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import loginRouter from './users.router.js'
-
+import usersRouter from './users.router.js'
+import urlRouter from './url.router.js'
 const router = Router();
 
-router.use('/', loginRouter);
+router.use(usersRouter);
 
 export default router;
