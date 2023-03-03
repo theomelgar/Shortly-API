@@ -57,7 +57,7 @@ export async function redirect(req, res) {
                 WHERE url = $1
             `, [rows[0].url]
         )
-        return res.redirect(rows[0].url)
+        return res.status(302).redirect(rows[0].url)
     } catch (error) {
         res.status(500).send(error.message)
     }
