@@ -26,11 +26,11 @@ SET default_table_access_method = heap;
 
 CREATE TABLE public.links (
     id integer NOT NULL,
-    "userId" integer NOT NULL,
     url text NOT NULL,
     "shortUrl" text NOT NULL,
-    views bigint DEFAULT 0 NOT NULL,
-    "createdAt" date DEFAULT now() NOT NULL
+    visits bigint DEFAULT 0 NOT NULL,
+    "userId" integer NOT NULL,
+    "createdAt" timestamp without time zone DEFAULT now() NOT NULL
 );
 
 
@@ -55,49 +55,16 @@ ALTER SEQUENCE public.links_id_seq OWNED BY public.links.id;
 
 
 --
--- Name: ranking; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.ranking (
-    id integer NOT NULL,
-    "userId" integer NOT NULL,
-    "totalViews" bigint DEFAULT 0 NOT NULL,
-    links integer DEFAULT 0 NOT NULL,
-    "userName" text NOT NULL,
-    "createdAt" date DEFAULT now() NOT NULL
-);
-
-
---
--- Name: ranking_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.ranking_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: ranking_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.ranking_id_seq OWNED BY public.ranking.id;
-
-
---
 -- Name: users; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.users (
     id integer NOT NULL,
-    name character varying(100) NOT NULL,
-    email character varying(100) NOT NULL,
-    password character varying(50) NOT NULL,
-    "createdAt" date DEFAULT now() NOT NULL
+    name text NOT NULL,
+    email text NOT NULL,
+    password text NOT NULL,
+    token text,
+    "createdAt" timestamp without time zone DEFAULT now() NOT NULL
 );
 
 
@@ -129,13 +96,6 @@ ALTER TABLE ONLY public.links ALTER COLUMN id SET DEFAULT nextval('public.links_
 
 
 --
--- Name: ranking id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.ranking ALTER COLUMN id SET DEFAULT nextval('public.ranking_id_seq'::regclass);
-
-
---
 -- Name: users id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -144,12 +104,6 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 
 --
 -- Data for Name: links; Type: TABLE DATA; Schema: public; Owner: -
---
-
-
-
---
--- Data for Name: ranking; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
@@ -168,13 +122,6 @@ SELECT pg_catalog.setval('public.links_id_seq', 1, false);
 
 
 --
--- Name: ranking_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.ranking_id_seq', 1, false);
-
-
---
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -190,59 +137,11 @@ ALTER TABLE ONLY public.links
 
 
 --
--- Name: ranking ranking_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.ranking
-    ADD CONSTRAINT ranking_pkey PRIMARY KEY (id);
-
-
---
--- Name: ranking ranking_userId_key; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.ranking
-    ADD CONSTRAINT "ranking_userId_key" UNIQUE ("userId");
-
-
---
--- Name: users users_name_key; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.users
-    ADD CONSTRAINT users_name_key UNIQUE (name);
-
-
---
 -- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
-
-
---
--- Name: links links_userId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.links
-    ADD CONSTRAINT "links_userId_fkey" FOREIGN KEY ("userId") REFERENCES public.users(id);
-
-
---
--- Name: ranking ranking_userId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.ranking
-    ADD CONSTRAINT "ranking_userId_fkey" FOREIGN KEY ("userId") REFERENCES public.users(id);
-
-
---
--- Name: ranking ranking_userName_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.ranking
-    ADD CONSTRAINT "ranking_userName_fkey" FOREIGN KEY ("userName") REFERENCES public.users(name);
 
 
 --
