@@ -29,12 +29,35 @@ export async function getUrlById(req, res) {
             `
                 SELECT * FROM links WHERE id = $1
             `, [id])
-        if( rowCount === 0 ) return res.sendStatus(404)
+        if (rowCount === 0) return res.sendStatus(404)
         res.status(201).send({
             id: url[0].id,
             url: url[0].url,
             shortUrl: url[0].shortUrl
         })
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+}
+
+export async function redirect(req, res) {
+    const { shortUrl } = req.params
+
+    try {
+        const { rows, rowCount } = await db.query(
+            `
+                SELECT * FROM links WHERE "shortUrl" = $1
+            `, [shortUrl])
+        if (rowCount < 0) return res.sendStatus(404)
+
+        await db.query(
+            `   
+                UPDATE links
+                SET "visitCount" = "visitCount" + 1
+                WHERE url = $1
+            `, [rows[0].url]
+        )
+        return res.redirect(rows[0].url)
     } catch (error) {
         res.status(500).send(error.message)
     }
