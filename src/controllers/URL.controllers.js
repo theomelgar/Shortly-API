@@ -78,7 +78,7 @@ export async function deleteUrl(req, res) {
         await db.query(
             `   
                 DELETE FROM links
-                WHERE url = $1
+                WHERE id = $1
             `, [id]
         )
         return res.sendStatus(204)
