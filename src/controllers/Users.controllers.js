@@ -39,17 +39,21 @@ export async function getUserById(req, res) {
     const user = res.locals.user;
     try {
         const userLinks = await db.query(`
-        SELECT id, url, "shortUrl", visits AS "visitCount" FROM links WHERE "userId" = $1
+            SELECT id, url, "shortUrl", visits AS "visitCount" 
+            FROM links 
+            WHERE "userId" = $1
         `, [user.id]
         )
         const userViews = await db.query(`
-            SELECT SUM (visits) AS "visits" FROM links WHERE "userId" = $1
-            `, [user.id]
+            SELECT SUM (visits) AS "visits" 
+            FROM links 
+            WHERE "userId" = $1
+        `, [user.id]
         )
         const data = {
             id: user.id,
             name: user.name,
-            visitCount: userViews.rows[0],
+            visitCount: userViews.rows[0].visits,
             shortenedUrls: userLinks.rows,
         }
         return res.status(200).send(data)
