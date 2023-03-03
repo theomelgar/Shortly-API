@@ -62,3 +62,27 @@ export async function redirect(req, res) {
         res.status(500).send(error.message)
     }
 }
+
+export async function deleteUrl(req, res) {
+    const { id } = req.params
+    const { user } = res.locals
+
+    try {
+        const { rows: url, rowCount } = await db.query(
+            `
+            SELECT * FROM links WHERE id = $1
+            `, [id])
+        if (rowCount < 1) return res.sendStatus(404)
+        if(url[0].userId !== user.id) return res.sendStatus(401)
+        
+        await db.query(
+            `   
+                DELETE FROM links
+                WHERE url = $1
+            `, [id]
+        )
+        return res.sendStatus(204)
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+}
