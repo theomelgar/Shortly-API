@@ -3,18 +3,8 @@ import bcrypt from "bcrypt";
 import { v4 as uuid } from "uuid";
 
 export async function signUp(req, res) {
-    const { name, email, password, confirmPassword } = req.body
-    if (password !== confirmPassword) return res.status(422).send(console.log('Password confirmation is different'))
+    const { name, email, password } = req.locals.user
     try {
-        const emailExists = await db.query(
-            'SELECT users.email FROM users WHERE email=$1', [email]
-        )
-        if (emailExists.rowCount > 0) {
-            return res.status(409).send(console.log('Email already taken.'))
-        }
-        if (!name || !email || !password || !confirmPassword) {
-            return res.sendStatus(422)
-        }
         let hashPassword = bcrypt.hashSync(password, 10)
 
         const insert = await db.query(
@@ -22,7 +12,7 @@ export async function signUp(req, res) {
             [name, email, hashPassword]
         )
         if (insert.rowCount === 0) {
-            return res.sendStatus(400)
+            return res.sendStatus(422)
         }
         res.status(201).send(console.log("User created"))
     } catch (error) {
