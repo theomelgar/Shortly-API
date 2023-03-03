@@ -2,10 +2,10 @@ import { db } from '../config/database.connection.js';
 import bcrypt from 'bcrypt';
 
 export async function signUpMW(req, res, next) {
-    const { email } = req.body;
+    const user = req.body;
     try {
         const userExist = await db.query(
-            `SELECT * FROM users WHERE email=$1`, [email]
+            `SELECT * FROM users WHERE email=$1`, [user.email]
         )
         if (userExist.rowCount > 0) {
             return res.sendStatus(409)
@@ -26,7 +26,8 @@ export async function signInMW(req, res, next) {
         if (userExist.rowCount <= 0) {
             return res.sendStatus(404)
         }
-        const comparePassword = bcrypt.compareSync(password, userExist.rows[0].password)
+        const user = userExist.rows[0]
+        const comparePassword = bcrypt.compareSync(password, user.password)
         if (!comparePassword) {
             return res.sendStatus(401)
         }
