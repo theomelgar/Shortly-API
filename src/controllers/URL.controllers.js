@@ -1,6 +1,5 @@
 import { db } from "../config/database.connection.js"
 import { nanoid } from "nanoid"
-import { deleteShortUrl, insertUrl, selectLinksId, selectLinksShortUrl, updateLinkVisits } from "../repositories/url.repositories.js"
 
 export async function postShort(req, res) {
     const { url } = req.body
@@ -8,7 +7,11 @@ export async function postShort(req, res) {
     const { user } = res.locals
     try {
         const { rows } = await db.query(
-            insertUrl, [url, shortUrl, user.id]
+            `
+            INSERT INTO links (url, "shortUrl", "userId" )
+            VALUES ($1, $2, $3)
+            RETURNING id
+        `, [url, shortUrl, user.id]
         )
         res.status(201).send({
             id: rows[0].id,
@@ -24,7 +27,9 @@ export async function getUrlById(req, res) {
 
     try {
         const { rows: url, rowCount } = await db.query(
-            selectLinksId, [id]
+            `
+                SELECT * FROM links WHERE id = $1
+            `, [id]
         )
         if (rowCount === 0) return res.sendStatus(404)
         res.status(200).send({
@@ -42,11 +47,17 @@ export async function redirect(req, res) {
 
     try {
         const { rows, rowCount } = await db.query(
-            selectLinksShortUrl, [shortUrl])
+            `
+                SELECT * FROM links WHERE "shortUrl" = $1
+            `, [shortUrl])
         if (rowCount < 1) return res.sendStatus(404)
 
         await db.query(
-            updateLinkVisits, [rows[0].url]
+            `   
+                UPDATE links
+                SET visits = visits + 1
+                WHERE url = $1
+            `, [rows[0].url]
         )
         return res.redirect(rows[0].url)
     } catch (error) {
@@ -60,12 +71,17 @@ export async function deleteUrl(req, res) {
 
     try {
         const { rows: url, rowCount } = await db.query(
-            selectLinksId, [id])
+            `
+                SELECT * FROM links WHERE id = $1
+            `, [id])
         if (rowCount < 1) return res.sendStatus(404)
         if (url[0].userId !== user.id) return res.sendStatus(401)
 
         await db.query(
-            deleteShortUrl, [id]
+            ` 
+                DELETE FROM links
+                WHERE id = $1
+            `, [id]
         )
         return res.sendStatus(204)
     } catch (error) {
