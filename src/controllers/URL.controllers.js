@@ -52,12 +52,14 @@ export async function redirect(req, res) {
             `, [shortUrl])
         if (rowCount < 1) return res.sendStatus(404)
 
+        const [url] = result.rows
+
         await db.query(
             `   
                 UPDATE links
                 SET visits = visits + 1
                 WHERE id = $1
-            `, [rows[0].id]
+            `, [url.id]
         )
         return res.redirect(rows[0].url)
     } catch (error) {
