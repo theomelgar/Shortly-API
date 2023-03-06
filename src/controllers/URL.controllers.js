@@ -56,8 +56,8 @@ export async function redirect(req, res) {
             `   
                 UPDATE links
                 SET visits = visits + 1
-                WHERE url = $1
-            `, [rows[0].url]
+                WHERE id = $1
+            `, [rows[0].id]
         )
         return res.redirect(rows[0].url)
     } catch (error) {
