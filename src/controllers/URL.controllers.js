@@ -46,11 +46,11 @@ export async function redirect(req, res) {
     const { shortUrl } = req.params
 
     try {
-        const { rows, rowCount } = await db.query(
+        const result = await db.query(
             `
                 SELECT * FROM links WHERE "shortUrl" = $1
             `, [shortUrl])
-        if (rowCount < 1) return res.sendStatus(404)
+        if (result.rowCount < 1) return res.sendStatus(404)
 
         const [url] = result.rows
 
@@ -61,7 +61,7 @@ export async function redirect(req, res) {
                 WHERE id = $1
             `, [url.id]
         )
-        return res.redirect(rows[0].url)
+        return res.redirect(result.rows[0].url)
     } catch (error) {
         res.status(500).send(error.message)
     }
